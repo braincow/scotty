@@ -19,3 +19,7 @@ RUST_LOG is optional, but by fiddling with it you can get more verbose output.
 
 As always its easiest to run the app with cargo:
 ```cargo run```
+
+## Patched rspotify
+
+This app uses forked version of the rspotify Rust crate. Cargo automagically handles the patching for you since my repository in Github for the patched branch is enabled by default in Cargo.toml. If ever main stream project accepts my submitted pull requests that becomes obviously redundant, but for now is very much needed.
