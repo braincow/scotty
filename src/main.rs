@@ -6,7 +6,7 @@ extern crate dotenv;
 
 use dotenv::dotenv;
 use rspotify::spotify::client::Spotify;
-use rspotify::spotify::util::get_token;
+use rspotify::spotify::util::{request_token, process_token};
 use rspotify::spotify::oauth2::{SpotifyClientCredentials, SpotifyOAuth};
 use std::thread;
 use std::time::Duration;
@@ -24,7 +24,7 @@ fn main() {
     info!("Started {} ({})", NAME, VERSION);
 
     let (tx, rx): (Sender<String>, Receiver<String>) = mpsc::channel();
-    let tx1 = mpsc::Sender::clone(&tx);
+    let (tx1, rx1): (Sender<bool>, Receiver<bool>) = mpsc::channel();
     thread::spawn(move || {
         let server = MicroHTTP::new("127.0.0.1:65510").expect("Could not create server.");
         debug!("Listening Spotify OAuth redirect at http://127.0.0.1:65510/");
@@ -50,8 +50,7 @@ fn main() {
                 }
             };
 
-            let ctrl_message = rx.recv_timeout(Duration::from_secs(1)).unwrap_or("timeout".to_string());
-            if ctrl_message == "done" {
+            if rx1.recv_timeout(Duration::from_secs(1)).unwrap_or(false) {
                 debug!("Received 'done' signal from main thread. Closing local http server.");
                 break;
             }
@@ -63,12 +62,13 @@ fn main() {
         .scope("user-read-recently-played")
         .build();
 
-    match get_token(&mut oauth) {
+    request_token(&mut oauth);
+    match process_token(&mut oauth, &mut rx.recv().unwrap()) {
         Some(token_info) => {
+            tx1.send(true).unwrap();
             let client_credential = SpotifyClientCredentials::default()
                 .token_info(token_info)
                 .build();
-            tx1.send("done".to_string()).unwrap();
             let spotify = Spotify::default()
                 .client_credentials_manager(client_credential)
                 .build();
