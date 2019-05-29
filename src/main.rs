@@ -79,6 +79,12 @@ fn main() {
         None => panic!("Auth / authz error.")
     };
 
-    let item = spotify.current_playing(None).unwrap().unwrap().item.unwrap();
-    println!("{:?}", item);
+    loop {
+        let item = spotify.current_playing(None).unwrap().unwrap().item.unwrap();
+        info!("Currently playing: '{}' by '{}' from '{}'",
+            item.name,
+            item.artists[0].name,
+            item.album.name);
+        thread::sleep(Duration::from_secs(10));
+    }
 }
