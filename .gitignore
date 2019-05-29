@@ -1,0 +1,5 @@
+/target
+**/*.rs.bk
+Cargo.lock
+.env
+.spotify_token_cache.json
