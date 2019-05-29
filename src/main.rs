@@ -59,22 +59,26 @@ fn main() {
     });
 
     let mut oauth = SpotifyOAuth::default()
-        .scope("user-read-recently-played")
+        .scope("user-read-currently-playing")
         .build();
 
-    request_token(&mut oauth);
-    match process_token(&mut oauth, &mut rx.recv().unwrap()) {
+    if oauth.get_cached_token().is_none() {
+        request_token(&mut oauth);
+        process_token(&mut oauth, &mut rx.recv().unwrap());
+    }
+    let spotify: Spotify = match oauth.get_cached_token() {
         Some(token_info) => {
             tx1.send(true).unwrap();
             let client_credential = SpotifyClientCredentials::default()
                 .token_info(token_info)
                 .build();
-            let spotify = Spotify::default()
+            Spotify::default()
                 .client_credentials_manager(client_credential)
-                .build();
-            let _history = spotify.current_user_recently_played(10);
-            //println!("{:?}", history);
+                .build()
         },
-        None => error!("Auth / authz error.")
+        None => panic!("Auth / authz error.")
     };
+
+    let item = spotify.current_playing(None).unwrap().unwrap().item.unwrap();
+    println!("{:?}", item);
 }
