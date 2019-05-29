@@ -59,6 +59,7 @@ fn main() {
     });
 
     let mut oauth = SpotifyOAuth::default()
+        .redirect_uri("http://127.0.0.1:65510/")
         .scope("user-read-currently-playing")
         .build();
 
