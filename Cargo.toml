@@ -12,4 +12,4 @@ dotenv = "0.14"
 micro_http_server = "0.0.3"
 
 [patch.crates-io]
-rspotify = { git = "https://github.com/braincow/rspotify", branch="crate_patch" }
+rspotify = { git = "https://github.com/ramsayleung/rspotify", branch="master" }
