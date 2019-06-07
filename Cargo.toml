@@ -5,11 +5,11 @@ authors = ["Antti Peltonen <antti.peltonen@iki.fi>"]
 edition = "2018"
 
 [dependencies]
-rspotify = "0.4"
+rspotify = "0.5"
 log = "0.4"
 pretty_env_logger = "0.3"
 dotenv = "0.14"
 micro_http_server = "0.0.3"
 
-[patch.crates-io]
-rspotify = { git = "https://github.com/ramsayleung/rspotify", branch="master" }
+#[patch.crates-io]
+#rspotify = { git = "https://github.com/ramsayleung/rspotify", branch="master" }
